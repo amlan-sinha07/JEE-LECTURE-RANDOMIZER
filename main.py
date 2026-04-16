@@ -1,14 +1,13 @@
 import random
 
-
 math_chapters = [
     ("Basic Math", 15), ("Quadratic Equations", 9), ("Sequences & Series", 9),
     ("Trigonometric Functions", 8), ("Trigonometric Equations", 4), ("PNC", 9),
-    ("Binomial Theorem", 0), ("Straight Lines", 9), ("Circle", 9),
+    ("Binomial Theorem", 8), ("Straight Lines", 9), ("Circle", 9),
     ("Parabola", 7), ("Ellipse", 5), ("Solution of Triangles", 4),
     ("Hyperbola", 4), ("Determinants", 3), ("Matrices", 7), ("Sets", 2),
     ("Functions", 14), ("ITF", 5), ("Limits", 10), ("MOD", 4),
-    ("AOD", 10), ("Indefinite Integration", 6), ("STST", 3),
+    ("AOD", 10), ("Indefinite Integration", 6), ("STAT", 3),
     ("Definite Integration", 6), ("AOI", 4), ("Differential Equations", 3),
     ("Vector Algebra", 8), ("3D Geometry", 4), ("Probability", 5),
     ("Complex Numbers", 7),
@@ -29,34 +28,43 @@ chem_chapters = [
 ]
 
 phy_chapters = [
-    ("Mathematical Tools", 8), ("Motion in a Straight Line", 7),
-    ("Motion in a Plane", 4), ("Relative Motion", 4), ("Laws of Motion", 13),
-    ("Work, Energy and Power", 9), ("Circular Motion", 10),
-    ("COM and System of Particles", 15), ("Rotational Motion", 20),
-    ("Oscillations", 8), ("Ray Optics and Optical Instruments", 19),
+    ("Math Tools", 8), ("Stra Line", 7),
+    ("Plane", 4), ("Rela Moti", 4), ("Laws of Moti", 13),
+    ("WEP", 9), ("Circ Moti", 10),
+    ("COM and Sys of Part", 15), ("Rota Moti", 20),
+    ("Oscil", 8), ("Ray", 19),
     ("Dual Nature", 4), ("Atom", 3), ("Nuclei", 3),
-    ("Thermal Properties of Matter", 6), ("Kinetic Theory of Gases", 3),
-    ("Thermodynamics", 4), ("Mechanical Properties of Solids", 1),
-    ("Mechanical Properties of Fluids", 9),
-    ("Electric Charges, Fields and Potential", 17),
-    ("Current Electricity", 9), ("Gravitation", 2),
-    ("Units and Measurements", 2),
-    ("Electrostatic Potential and Capacitance", 6),
-    ("Moving Charges and Magnetism", 12), ("Electromagnetic Induction", 7),
-    ("Alternating Current", 3), ("Waves", 9),
-    ("Electromagnetic Waves", 1), ("Wave Optics", 6), ("Semiconductor", 2),
+    ("Thermal Propert", 6), ("Kinetic ", 3),
+    ("Thermo", 4), ("Solids", 1),
+    ("Fluids", 9),
+    ("Elec Char, Fiel and Pote", 17),
+    ("Curr Elec", 9), ("Grav", 2),
+    ("Unit and Meas", 2),
+    ("Elec Pote and Capa", 6),
+    ("Movi Char and Magn", 12), ("Elec Indu", 7),
+    ("Alte Curr", 3), ("Waves", 9),
+    ("Elec Wave", 1), ("Wave Opti", 6), ("Semi", 2),
 ]
 
 
 def pick_different(chapters, prev_index):
-    """Pick a random chapter index different from the previous one."""
     choices = [i for i in range(len(chapters)) if i != prev_index]
     return random.choice(choices)
 
 
-NUM_ATTEMPTS = 4
+def pick_lecture(total):
+    """Pick a lecture number with low weight on first and last."""
+    if total == 1:
+        return 1
+    population = list(range(1, total + 1))
+    # First and last get weight 1, middle lectures get weight 4
+    weights = [1] + [4] * (total - 2) + [1] if total > 2 else [1, 1]
+    return random.choices(population, weights=weights, k=1)[0]
 
-col_w = 36  
+
+NUM_ATTEMPTS = 8
+
+col_w = 36
 print(f"{'Attempt':<10} {'Physics':<{col_w}} {'Chemistry':<{col_w}} {'Math':<{col_w}}")
 print("-" * (10 + col_w * 3))
 
@@ -69,12 +77,17 @@ for i in range(1, NUM_ATTEMPTS + 1):
 
     prev_p, prev_c, prev_m = pi, ci, mi
 
-    p_name, p_lec = phy_chapters[pi]
-    c_name, c_lec = chem_chapters[ci]
-    m_name, m_lec = math_chapters[mi]
+    p_name, p_total = phy_chapters[pi]
+    c_name, c_total = chem_chapters[ci]
+    m_name, m_total = math_chapters[mi]
 
-    p_str = f"Lec {p_lec} | {p_name}"
-    c_str = f"Lec {c_lec} | {c_name}"
-    m_str = f"Lec {m_lec} | {m_name}"
+    # Pick a specific lecture number with weightage applied
+    p_lec = pick_lecture(p_total)
+    c_lec = pick_lecture(c_total)
+    m_lec = pick_lecture(m_total)
+
+    p_str = f"Lec {p_lec}/{p_total} | {p_name}"
+    c_str = f"Lec {c_lec}/{c_total} | {c_name}"
+    m_str = f"Lec {m_lec}/{m_total} | {m_name}"
 
     print(f"{i:<10} {p_str:<{col_w}} {c_str:<{col_w}} {m_str:<{col_w}}")
